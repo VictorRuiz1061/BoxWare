@@ -44,6 +44,7 @@ export const crearcategorias_elementos = async (req, res) => {
     }
 }
 
+
 // Actualizar categoría de material
 export const actualizarcategorias_elementos = async (req, res) => {
     const {  id_categoria_elemento} = req.params;
