@@ -1,7 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import dotenv from "dotenv";
+dotenv.config();
 
+import validar from './src/routes/seguridad.route.js';
 import usuarios from './src/routes/usuarios_V.js'
 import admin from './src/routes/adminis_V.js'
 import tipo_permiso from './src/routes/tipos_permisos_V.js'
@@ -16,6 +19,10 @@ app.use(
   })
 );
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Middleware para registrar solicitudes
 app.use((req, res, next) => {
   console.log("Request URL:", req.url);
   console.log("Request Method:", req.method);
@@ -23,9 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(validar)
 app.use(admin);
 app.use(permisos);
 app.use(permisosUsers);
