@@ -11,24 +11,6 @@ export const mostrarMovimientos = async (req, res) => {
     }
 }
 
-// Buscar movimiento
-export const buscarMovimiento = async (req, res) => {
-    const { id_movimiento } = req.params;
-    const sql = 'SELECT * FROM movimientos WHERE id_movimiento = $1';
-    
-    try {
-        const result = await pool.query(sql, [id_movimiento]);
-        if (result.rows.length > 0) {
-            return res.status(200).json(result.rows);
-        } else {
-            return res.status(400).json({ status: 400, message: "El movimiento no existe" });
-        }
-    } catch (e) {
-        console.error('Error al buscar el movimiento:', e);
-        return res.status(500).json({ message: 'Error del servidor al buscar el movimiento', error: e.message });
-    }
-}
-
 // Crear movimiento
 export const crearMovimiento = async (req, res) => {
     const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id } = req.body;
@@ -47,9 +29,29 @@ export const actualizarMovimiento = async (req, res) => {
     const { id_movimiento } = req.params;  
     const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id } = req.body;
 
-    const sql = `UPDATE movimientos SET fecha_creacion = $1, fecha_modificacion = $2, usuario_movimiento_id = $3, tipo_movimiento_id = $4 WHERE id_movimiento = $5 RETURNING id_movimiento;`;
-
+    // Verificar si el movimiento existe
     try {
+        const checkSql = 'SELECT * FROM movimientos WHERE id_movimiento = $1';
+        const checkResult = await pool.query(checkSql, [id_movimiento]);
+        
+        if (checkResult.rowCount === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: `No se encontró el movimiento con ID ${id_movimiento}`
+            });
+        }
+        
+        // Si el movimiento existe, procedemos a actualizarlo
+        const sql = `UPDATE movimientos SET fecha_creacion = $1, fecha_modificacion = $2, usuario_movimiento_id = $3, tipo_movimiento_id = $4 WHERE id_movimiento = $5 RETURNING id_movimiento;`;
+
+        console.log("Datos para actualizar:", {
+            id_movimiento,
+            fecha_creacion,
+            fecha_modificacion,
+            usuario_movimiento_id,
+            tipo_movimiento_id
+        });
+
         const result = await pool.query(sql, [
             fecha_creacion, 
             fecha_modificacion, 
@@ -67,7 +69,7 @@ export const actualizarMovimiento = async (req, res) => {
         } else {
             return res.status(400).json({
                 status: 400,
-                message: "No se ha podido actualizar el movimiento" 
+                message: "No se ha podido actualizar el movimiento. Verifica que los valores proporcionados sean válidos." 
             });
         }
     } catch (e) {
