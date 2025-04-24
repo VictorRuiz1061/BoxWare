@@ -12,24 +12,6 @@ export const mostrarTiposSitio = async (req, res) => {
     }
 }
 
-// Buscar tipo de sitio
-export const buscarTipoSitio = async (req, res) => {
-    const { id_tipo_sitio } = req.params;
-    const sql = 'SELECT * FROM tipos_sitio WHERE id_tipo_sitio = $1';
-    
-    try {
-        const result = await pool.query(sql, [id_tipo_sitio]);
-        if (result.rows.length > 0) {
-            return res.status(200).json(result.rows);
-        } else {
-            return res.status(400).json({ status: 400, message: "El tipo de sitio no existe" });
-        }
-    } catch (e) {
-        console.error('Error al buscar el tipo de sitio:', e);
-        return res.status(500).json({ message: 'Error del servidor al buscar el tipo de sitio', error: e.message });
-    }
-}
-
 // Crear tipo de sitio
 export const crearTipoSitio = async (req, res) => {
     const { nombre_tipo_sitio, fecha_creacion, fecha_modificacion } = req.body;

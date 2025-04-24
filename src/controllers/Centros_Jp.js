@@ -20,7 +20,7 @@ export const registrarCentrosJp = async (req, res) => {
     try {
         const sql = `
             INSERT INTO centros (id_centro, nombre_centro, fecha_creacion, fecha_modificacion, municipio_id)
-            VALUES ($, $, $, $, $)
+            VALUES ($1, $2, $3, $4, $5)
         `;
         await pool.query(sql, [id_centro, nombre_centro, fecha_creacion, fecha_modificacion, municipio_id]);
 
@@ -65,26 +65,6 @@ export const actualizarCentrosJp = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: 'Error del servidor: ' + error.message,
-        });
-    }
-};
-
-export const buscarCentrosJp = async (req, res) => {
-    try {
-        const { id_centro } = req.params;
-        const sql = `SELECT * FROM centros WHERE id_centro = $1`;
-        const result = await pool.query(sql, [id_centro]);
-
-        if (result.rows.length > 0) {
-            res.status(200).json(result.rows);
-        } else {
-            res.status(404).json({
-                message: 'Centro no encontrado'
-            });
-        }
-    } catch (error) {
-        res.status(500).json({
-            message: 'Error en el servidor: ' + error
         });
     }
 };

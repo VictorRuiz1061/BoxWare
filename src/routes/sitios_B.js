@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { mostrarSitios,crearSitio, buscarSitio, actualizarSitio, eliminarSitio } from "../controllers/sitio_B.js"; 
+import { mostrarSitios,crearSitio, buscarSitio, actualizarSitio, eliminarSitio } from "../controllers/sitio_B.js";
 const router = Router();
 
 router.get('/sitios', mostrarSitios);

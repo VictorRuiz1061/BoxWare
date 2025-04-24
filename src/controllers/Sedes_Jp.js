@@ -25,7 +25,7 @@ export const registrarSedeJp = async (req, res) => {
     try {
         const sql = `
             INSERT INTO sedes (id_sede, nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES ($1, $2, $3, $4, $5, $6)
         `;
         await pool.query(sql, [id_sede, nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id]);
 
@@ -43,11 +43,11 @@ export const actualizarSedeJp = async (req, res) => {
     try {
         const sql = `
             UPDATE sedes SET
-                nombre_sede = ?,
-                direccion_sede = ?,
-                fecha_modificacion = ?,
-                centro_sede_id = ?
-            WHERE id_sede = ?
+                nombre_sede = $1,
+                direccion_sede = $2,
+                fecha_modificacion = $3,
+                centro_sede_id = $4
+            WHERE id_sede = $5
         `;
 
         const result = await pool.query(sql, [nombre_sede, direccion_sede, fecha_modificacion, centro_sede_id, id_sede]);
@@ -62,27 +62,10 @@ export const actualizarSedeJp = async (req, res) => {
     }
 };
 
-export const buscarSedeJp = async (req, res) => {
-    try {
-        const { id_sede } = req.params;
-        const sql = `SELECT * FROM sedes WHERE id_sede = ?`;
-        const result = await pool.query(sql, [id_sede]);
-
-        if (result.rows.length > 0) {
-            res.status(200).json(result.rows[0]);
-        } else {
-            res.status(404).json({ message: 'Sede no encontrada' });
-        }
-    } catch (error) {
-        console.error("Error al buscar sede:", error);
-        res.status(500).json({ message: 'Error del servidor, contacte al administrador.' });
-    }
-};
-
 export const eliminarSedeJp = async (req, res) => {
     try {
         const { id_sede } = req.params;
-        const sql = `DELETE FROM sedes WHERE id_sede = ?`;
+        const sql = `DELETE FROM sedes WHERE id_sede = $1`;
         const result = await pool.query(sql, [id_sede]);
 
         if (result.rowCount > 0) {

@@ -12,24 +12,6 @@ export const mostrarTiposMovimiento = async (req, res) => {
     }
 }
 
-// Buscar tipo de movimiento
-export const buscarTipoMovimiento = async (req, res) => {
-    const { id_tipo_movimiento } = req.params;
-    const sql = 'SELECT * FROM tipos_movimiento WHERE id_tipo_movimiento = $1';
-    
-    try {
-        const result = await pool.query(sql, [id_tipo_movimiento]);
-        if (result.rows.length > 0) {
-            return res.status(200).json(result.rows);
-        } else {
-            return res.status(400).json({ status: 400, message: "El tipo de movimiento no existe" });
-        }
-    } catch (e) {
-        console.error('Error al buscar el tipo de movimiento:', e);
-        return res.status(500).json({ message: 'Error del servidor al buscar el tipo de movimiento', error: e.message });
-    }
-}
-
 // Crear tipo de movimiento
 export const crearTipoMovimiento = async (req, res) => {
     const { tipo_movimiento, fecha_creacion, fecha_modificacion } = req.body;

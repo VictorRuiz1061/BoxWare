@@ -12,24 +12,6 @@ export const mostrarRoles = async (req, res) => {
     }
 }
 
-// Buscar rol
-export const buscarRol = async (req, res) => {
-    const { id_rol } = req.params;
-    const sql = 'SELECT * FROM roles WHERE id_rol = $1';
-    
-    try {
-        const result = await pool.query(sql, [id_rol]);
-        if (result.rows.length > 0) {
-            return res.status(200).json(result.rows);
-        } else {
-            return res.status(400).json({ status: 400, message: "El rol no existe" });
-        }
-    } catch (e) {
-        console.error('Error al buscar el rol:', e);
-        return res.status(500).json({ message: 'Error del servidor al buscar el rol', error: e.message });
-    }
-}
-
 // Crear rol
 export const crearRol = async (req, res) => {
     const { nombre_rol, descripcion, estado, fecha_creacion } = req.body;

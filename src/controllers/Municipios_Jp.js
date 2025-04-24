@@ -25,7 +25,7 @@ export const registrarMunicipioJp = async (req, res) => {
     try {
         const sql = `
             INSERT INTO municipios (id_municipio, nombre_municipio, fecha_creacion, fecha_modificacion)
-            VALUES ($, $, $, $)
+            VALUES ($1, $2, $3, $4)
         `;
         await pool.query(sql, [id_municipio, nombre_municipio, fecha_creacion, fecha_modificacion]);
 
@@ -43,9 +43,9 @@ export const actualizarMunicipioJp = async (req, res) => {
     try {
         const sql = `
             UPDATE municipios SET
-                nombre_municipio = $,
-                fecha_modificacion = $
-            WHERE id_municipio = $
+                nombre_municipio = $1,
+                fecha_modificacion = $2
+            WHERE id_municipio = $3
         `;
 
         const result = await pool.query(sql, [nombre_municipio, fecha_modificacion, id_municipio]);
@@ -60,27 +60,10 @@ export const actualizarMunicipioJp = async (req, res) => {
     }
 };
 
-export const buscarMunicipioJp = async (req, res) => {
-    try {
-        const { id_municipio } = req.params;
-        const sql = `SELECT * FROM municipios WHERE id_municipio = $`;
-        const result = await pool.query(sql, [id_municipio]);
-
-        if (result.rows.length > 0) {
-            res.status(200).json(result.rows[0]);
-        } else {
-            res.status(404).json({ message: 'Municipio no encontrado' });
-        }
-    } catch (error) {
-        console.error("Error al buscar municipio:", error);
-        res.status(500).json({ message: 'Error del servidor, contacte al administrador.' });
-    }
-};
-
 export const eliminarMunicipioJp = async (req, res) => {
     try {
         const { id_municipio } = req.params;
-        const sql = `DELETE FROM municipios WHERE id_municipio = $`;
+        const sql = `DELETE FROM municipios WHERE id_municipio = $1`;
         const result = await pool.query(sql, [id_municipio]);
 
         if (result.rowCount > 0) {
