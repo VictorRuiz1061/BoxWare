@@ -9,7 +9,7 @@ import permisos from './src/routes/permisos_V.js'
 import movimientos from './src/routes/movimientos_T.js';
 import tiposMovimiento from './src/routes/tipoMovimiento_T.js';
 import tiposSitio from './src/routes/tipoSitio_T.js';
-import roles from './src/routes/roles_T.js';
+import roles from './src/routes/roles_v.js';
 import fichas from './src/routes/fichasCV.js'
 import area from './src/routes/area_CV.js'
 import programas from './src/routes/programas_CV.js'
