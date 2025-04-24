@@ -1,21 +1,23 @@
-import {createPool} from 'mysql2/promise';
+import pkg from 'pg';
 import dotenv from 'dotenv';
 
-dotenv.config({path:'./env/.env'});
+dotenv.config({ path: './env/.env' });
 
-export const pool = createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT
+const { Pool } = pkg;
+
+export const pool = new Pool({
+   host: process.env.DB_HOST,
+   user: process.env.DB_USER,
+   password: process.env.DB_PASSWORD,
+   port: process.env.DB_PORT,
+   database: process.env.DB_DATABASE
 });
 
 (async () => {
     try {
-        const connection = await pool.getConnection();
+        const client = await pool.connect();
         console.log('Conexión exitosa');
-        connection.release(); 
+        client.release();
     } catch (err) {
         console.error('Error de conexión:', err.message);
     }
