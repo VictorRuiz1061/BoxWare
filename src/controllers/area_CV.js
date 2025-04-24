@@ -11,23 +11,6 @@ export const mostrarAreas = async (req, res) => {
     }
 }
 
-// Buscar área por ID
-export const buscarArea = async (req, res) => {
-    const id_area = req.params.id_area;
-    try {
-        const result = await pool.query('SELECT * FROM areas WHERE id_area = $1', [id_area]);
-
-        if(result.rows.length > 0){
-            return res.status(200).json(result.rows[0]);
-        } else {
-            return res.status(404).json({ mensaje: 'Área no encontrada' });
-        }
-    } catch (error) {
-        console.error('Error en la consulta:', error.message);
-        return res.status(500).json({ mensaje: 'Error en la consulta', error: error.message });
-    }
-};
-
 // Crear área
 export const crearArea = async (req, res) => {
     const { nombre_area } = req.body;
