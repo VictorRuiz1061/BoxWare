@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { validar, registroPublico,  } from "../controllers/seguridad.controller.js";
 
-const rutaSeguridad = Router();
+const Seguridad = Router(); 
 
-rutaSeguridad.post("/validacion", validar);
-rutaSeguridad.post("/registrar", registroPublico);
+Seguridad.post("/validacion", validar);
+Seguridad.post("/registrar", registroPublico);
 
-export default rutaSeguridad;
+export default Seguridad;

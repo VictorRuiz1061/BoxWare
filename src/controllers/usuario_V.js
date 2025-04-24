@@ -1,5 +1,4 @@
 import { pool } from "../conexion/conexion.js";
-import bcrypt from "bcrypt";
 
 //mostrar usuarios
 export const mostrarUsuarios = async (req, res) => {
@@ -12,24 +11,6 @@ export const mostrarUsuarios = async (req, res) => {
   }
 };
 
-//buscar usuario
-export const buscarUsuario = async (req, res) => {
-  try {
-    const id_usuario = req.params.id_usuario;
-    const result = await pool.query(
-      "SELECT * FROM usuarios WHERE id_usuario  = $1",
-      [id_usuario]
-    );
-    if (result.rows.length > 0) {
-      return res.status(200).json(result.rows[0]);
-    } else {
-      return res.status(404).json("Usuario no encontrado");
-    }
-  } catch (error) {
-    console.error("Error en la consulta:", error.message);
-    res.status(500).json("Error en la consulta");
-  }
-};
 // Crear usuario
 export const crearUsuario = async (req, res) => {
   const {
@@ -47,9 +28,6 @@ export const crearUsuario = async (req, res) => {
   } = req.body;
 
   try {
-    // Encriptar la contraseña antes de guardarla
-    const hashedPassword = await bcrypt.hash(contrasena, 10);
-
     const sql =
       "INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, inicio_sesion, esta_activo, fecha_registro, rol_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)";
 
@@ -59,7 +37,7 @@ export const crearUsuario = async (req, res) => {
       edad,
       cedula,
       email,
-      hashedPassword, // Usar la contraseña encriptada
+      contrasena,
       telefono,
       inicio_sesion,
       esta_activo,
@@ -97,12 +75,9 @@ export const actualizarUsuario = async (req, res) => {
   } = req.body;
 
   try {
-    // Encriptar la contraseña antes de actualizarla
-    const hashedPassword = contrasena ? await bcrypt.hash(contrasena, 10) : null;
-
     const sql = `
             UPDATE usuarios 
-            SET nombre = $1, apellido = $2, edad = $3, cedula = $4, email = $5, contrasena = COALESCE($6, contrasena), 
+            SET nombre = $1, apellido = $2, edad = $3, cedula = $4, email = $5, contrasena = $6, 
                 telefono = $7, inicio_sesion = $8, esta_activo = $9, fecha_registro = $10, rol_id = $11
             WHERE id_usuario = $12;
         `;
@@ -112,7 +87,7 @@ export const actualizarUsuario = async (req, res) => {
       edad,
       cedula,
       email,
-      hashedPassword, // Usar la contraseña encriptada si se proporciona
+      contrasena,
       telefono,
       inicio_sesion,
       esta_activo,
@@ -143,33 +118,16 @@ export const eliminarUsuario = async (req, res) => {
   const { id_usuario } = req.params;
 
   try {
-    // Iniciar una transacción
-    await pool.query('BEGIN');
-
-    // Eliminar registros relacionados en todas las tablas dependientes
-    // 1. Eliminar registros en permisos_usuario
-    await pool.query('DELETE FROM permisos_usuario WHERE usuario_id = $1', [id_usuario]);
-
-    // 2. Eliminar registros en administrador
-    await pool.query('DELETE FROM administrador WHERE usuario_id = $1', [id_usuario]);
-
-    // 3. Finalmente eliminar el usuario
     const sql = "DELETE FROM usuarios WHERE id_usuario = $1";
     const result = await pool.query(sql, [id_usuario]);
-
-    // Confirmar la transacción
-    await pool.query('COMMIT');
-
     if (result.rowCount > 0) {
       return res
         .status(200)
-        .json({ mensaje: "Usuario y sus registros relacionados eliminados exitosamente" });
+        .json({ mensaje: "Usuario eliminado exitosamente" });
     } else {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
   } catch (e) {
-    // Si hay algún error, revertir la transacción
-    await pool.query('ROLLBACK');
     console.error(e);
     return res
       .status(500)
