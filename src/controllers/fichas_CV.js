@@ -25,29 +25,28 @@ export const mostrarFichas = async (req, res) => {
 
 // Crear ficha
 export const crearFicha = async (req, res) => {
-  const { usuario_ficha_id, programa_id } = req.body;
+  const { id_ficha, usuario_ficha_id, programa_id } = req.body;
 
-  if (!usuario_ficha_id || !programa_id) {
+  if (!id_ficha || !usuario_ficha_id || !programa_id) {
     return res.status(400).json({
-      mensaje: "El ID del usuario y el ID del programa son requeridos",
+      mensaje: "El ID de la ficha, el ID del usuario y el ID del programa son requeridos",
     });
   }
 
   try {
     const sql = `
-            INSERT INTO fichas (
-                fecha_creacion,
-                fecha_modificacion,
-                usuario_ficha_id,
-                programa_id
-            ) VALUES (
-                CURRENT_TIMESTAMP,
-                CURRENT_TIMESTAMP,
-                $1, $2
-            ) RETURNING *
-        `;
+      INSERT INTO fichas (
+        id_ficha,
+        fecha_creacion,
+        fecha_modificacion,
+        usuario_ficha_id,
+        programa_id
+      ) VALUES (
+        $1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $2, $3
+      ) RETURNING *
+    `;
 
-    const result = await pool.query(sql, [usuario_ficha_id, programa_id]);
+    const result = await pool.query(sql, [id_ficha, usuario_ficha_id, programa_id]);
     return res.status(201).json({
       mensaje: "Ficha creada exitosamente",
       ficha: result.rows[0],

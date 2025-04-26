@@ -16,7 +16,6 @@ export const crearmodulo = async (req, res) => {
     fecha_accion,
     rutas,
     descripcion_ruta,
-    bandera_accion,
     mensaje_cambio,
   } = req.body;
 
@@ -26,17 +25,15 @@ export const crearmodulo = async (req, res) => {
                 fecha_accion, 
                 rutas, 
                 descripcion_ruta, 
-                bandera_accion, 
                 mensaje_cambio
             )
-            VALUES ($1, $2, $3, $4, $5)
+            VALUES ($1, $2, $3, $4)
         `;
 
     const result = await pool.query(sql, [
       fecha_accion,
       rutas,
       descripcion_ruta,
-      bandera_accion,
       mensaje_cambio,
     ]);
 

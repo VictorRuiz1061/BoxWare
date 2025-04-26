@@ -16,18 +16,18 @@ export const listarSedesJp = async (req, res) => {
 };
 
 export const registrarSedeJp = async (req, res) => {
-    const { id_sede, nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id } = req.body;
+    const { nombre_sede, direccion_sede, centro_sede_id, fecha_creacion, fecha_modificacion } = req.body;
 
-    if (!id_sede || !nombre_sede || !direccion_sede || !centro_sede_id) {
+    if (!nombre_sede || !direccion_sede || !centro_sede_id) {
         return res.status(400).json({ message: "Faltan campos obligatorios." });
     }
 
     try {
         const sql = `
-            INSERT INTO sedes (id_sede, nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO sedes ( nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id)
+            VALUES ($1, $2, $3, $4, $5)
         `;
-        await pool.query(sql, [id_sede, nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id]);
+        await pool.query(sql, [ nombre_sede, direccion_sede, fecha_creacion, fecha_modificacion, centro_sede_id]);
 
         res.status(201).json({ message: "Sede registrada exitosamente" });
     } catch (error) {

@@ -16,18 +16,18 @@ export const listarMunicipiosJp = async (req, res) => {
 };
 
 export const registrarMunicipioJp = async (req, res) => {
-    const { id_municipio, nombre_municipio, fecha_creacion, fecha_modificacion } = req.body;
+    const { nombre_municipio, fecha_creacion, fecha_modificacion } = req.body;
 
-    if (!id_municipio || !nombre_municipio) {
+    if (!nombre_municipio) {
         return res.status(400).json({ message: "Faltan campos obligatorios." });
     }
 
     try {
         const sql = `
-            INSERT INTO municipios (id_municipio, nombre_municipio, fecha_creacion, fecha_modificacion)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO municipios (nombre_municipio, fecha_creacion, fecha_modificacion)
+            VALUES ($1, $2, $3)
         `;
-        await pool.query(sql, [id_municipio, nombre_municipio, fecha_creacion, fecha_modificacion]);
+        await pool.query(sql, [nombre_municipio, fecha_creacion, fecha_modificacion]);
 
         res.status(201).json({ message: "Municipio registrado exitosamente" });
     } catch (error) {

@@ -15,14 +15,14 @@ export const listarCentrosJp = async (req, res) => {
 };
 
 export const registrarCentrosJp = async (req, res) => {
-    const { id_centro, nombre_centro, fecha_creacion, fecha_modificacion, municipio_id } = req.body;
+    const { nombre_centro, fecha_creacion, fecha_modificacion, municipio_id } = req.body;
 
     try {
         const sql = `
-            INSERT INTO centros (id_centro, nombre_centro, fecha_creacion, fecha_modificacion, municipio_id)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO centros (nombre_centro, fecha_creacion, fecha_modificacion, municipio_id)
+            VALUES ($1, $2, $3, $4)
         `;
-        await pool.query(sql, [id_centro, nombre_centro, fecha_creacion, fecha_modificacion, municipio_id]);
+        await pool.query(sql, [nombre_centro, fecha_creacion, fecha_modificacion, municipio_id]);
 
         res.status(201).json({ 
             message: "Centro registrado exitosamente", 

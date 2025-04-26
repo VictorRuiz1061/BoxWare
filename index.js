@@ -29,6 +29,14 @@ app.use(
   })
 );
 
+const app2 = express();
+app2.use(  
+  cors({
+    origin: "http://localhost:5174",
+    credentials: true,
+  })
+);
+
 app.use((req, res, next) => {
   console.log("Request URL:", req.url);
   console.log("Request Method:", req.method);
@@ -61,6 +69,13 @@ app.use(tiposMateriales);
 app.use(
     cors({
       origin: "http://localhost:5173",
+      credentials: true,
+    })
+  );
+
+app2.use(
+    cors({
+      origin: "http://localhost:5174",
       credentials: true,
     })
   );

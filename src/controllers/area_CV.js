@@ -13,15 +13,15 @@ export const mostrarAreas = async (req, res) => {
 
 // Crear área
 export const crearArea = async (req, res) => {
-    const { nombre_area } = req.body;
+    const { nombre_area, sede_id } = req.body;
     
     try {
         const sql = `
-            INSERT INTO areas (nombre_area, fecha_creacion, fecha_modificacion) 
-            VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            INSERT INTO areas (nombre_area, fecha_creacion, fecha_modificacion, sede_id) 
+            VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $2)
         `;
         
-        const result = await pool.query(sql, [nombre_area]);
+        const result = await pool.query(sql, [nombre_area, sede_id]);
         if (result.rowCount > 0) {
             return res.status(201).json({ mensaje: 'Área creada exitosamente' });
         } else {
