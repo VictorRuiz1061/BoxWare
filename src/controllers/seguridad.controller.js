@@ -121,3 +121,17 @@ export const registroPublico = async (req, res) => {
     res.status(500).json({ message: "Error al registrar usuario" });
   }
 };
+
+export const verificarToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Se requiere Token" });
+  }
+  try {
+    const decoded = Jwt.verify(token, process.env.AUT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token inválido" });
+  }
+};

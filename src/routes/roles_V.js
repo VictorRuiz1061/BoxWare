@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { mostrarRoles, crearRol, actualizarRol, eliminarRol } from "../controllers/roles_V.js"; 
-const router = Router();
+import { verificarToken } from "../controllers/seguridad.controller.js";
 
-router.get('/roles', mostrarRoles);
-router.post('/roles', crearRol);
-router.put('/roles/:id_rol', actualizarRol);
-router.delete('/roles/:id_rol', eliminarRol);
+const router = Router();    
+router.get('/roles', verificarToken, mostrarRoles);
+router.post('/roles', verificarToken, crearRol);
+router.put('/roles/:id_rol', verificarToken, actualizarRol);
+router.delete('/roles/:id_rol', verificarToken, eliminarRol);
 
-export default router; 
+export default router;
