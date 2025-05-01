@@ -13,10 +13,10 @@ export const mostrarMovimientos = async (req, res) => {
 
 // Crear movimiento
 export const crearMovimiento = async (req, res) => {
-    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id } = req.body;
-    const sql = 'INSERT INTO movimientos (fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id) VALUES ($1, $2, $3, $4) RETURNING id_movimiento';
+    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id } = req.body;
+    const sql = 'INSERT INTO movimientos (fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id) VALUES ($1, $2, $3, $4, $5) RETURNING id_movimiento';
     try {
-        const result = await pool.query(sql, [fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id]);
+        const result = await pool.query(sql, [fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id]);
         return res.status(200).json({ status: 200, message: "El movimiento se registró en el sistema", id_movimiento: result.rows[0].id_movimiento });
     } catch (e) {
         console.error('Error al crear el movimiento:', e);
@@ -27,7 +27,7 @@ export const crearMovimiento = async (req, res) => {
 // Actualizar movimiento
 export const actualizarMovimiento = async (req, res) => {
     const { id_movimiento } = req.params;  
-    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id } = req.body;
+    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id } = req.body;
 
     // Verificar si el movimiento existe
     try {
@@ -42,14 +42,15 @@ export const actualizarMovimiento = async (req, res) => {
         }
         
         // Si el movimiento existe, procedemos a actualizarlo
-        const sql = `UPDATE movimientos SET fecha_creacion = $1, fecha_modificacion = $2, usuario_movimiento_id = $3, tipo_movimiento_id = $4 WHERE id_movimiento = $5 RETURNING id_movimiento;`;
+        const sql = `UPDATE movimientos SET fecha_creacion = $1, fecha_modificacion = $2, usuario_movimiento_id = $3, tipo_movimiento_id = $4, material_id = $5 WHERE id_movimiento = $6 RETURNING id_movimiento;`;
 
         console.log("Datos para actualizar:", {
             id_movimiento,
             fecha_creacion,
             fecha_modificacion,
             usuario_movimiento_id,
-            tipo_movimiento_id
+            tipo_movimiento_id,
+            material_id
         });
 
         const result = await pool.query(sql, [
@@ -57,6 +58,7 @@ export const actualizarMovimiento = async (req, res) => {
             fecha_modificacion, 
             usuario_movimiento_id, 
             tipo_movimiento_id, 
+            material_id,
             id_movimiento
         ]);
 
