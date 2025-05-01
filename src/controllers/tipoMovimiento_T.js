@@ -1,94 +1,100 @@
 import { pool } from "../conexion/conexion.js"; 
 
-// Mostrar tipos de movimiento
-export const mostrarTiposMovimiento = async (req, res) => {
-    const sql = 'SELECT * FROM tipos_movimiento';
+// Mostrar movimientos
+export const mostrarMovimientos = async (req, res) => {
+    const sql = 'SELECT * FROM movimientos';
     try {
         const result = await pool.query(sql); 
         return res.status(200).json(result.rows); 
     } catch (e) {
-        console.error('Error al mostrar tipos de movimiento:', e);
-        return res.status(500).json('Error del servidor al mostrar los tipos de movimiento');
+        return res.status(500).json('Error del servidor al mostrar los movimientos');
     }
 }
 
-// Crear tipo de movimiento
-export const crearTipoMovimiento = async (req, res) => {
-    const { tipo_movimiento, fecha_creacion, fecha_modificacion } = req.body;
-    const sql = 'INSERT INTO tipos_movimiento (tipo_movimiento, fecha_creacion, fecha_modificacion) VALUES ($1, $2, $3) RETURNING id_tipo_movimiento';
-    
+// Crear movimiento
+export const crearMovimiento = async (req, res) => {
+    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id } = req.body;
+    const sql = 'INSERT INTO movimientos (fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id) VALUES ($1, $2, $3, $4, $5) RETURNING id_movimiento';
     try {
-        const result = await pool.query(sql, [tipo_movimiento, fecha_creacion, fecha_modificacion]);
-        return res.status(200).json({ 
-            status: 200, 
-            message: "El tipo de movimiento se registró en el sistema", 
-            id_tipo_movimiento: result.rows[0].id_tipo_movimiento 
-        });
+        const result = await pool.query(sql, [fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id]);
+        return res.status(200).json({ status: 200, message: "El movimiento se registró en el sistema", id_movimiento: result.rows[0].id_movimiento });
     } catch (e) {
-        console.error('Error al crear el tipo de movimiento:', e);
-        return res.status(500).json({ 
-            message: 'Error del servidor al crear el tipo de movimiento', 
-            error: e.message 
-        });
+        console.error('Error al crear el movimiento:', e);
+        return res.status(500).json({ message: 'Error del servidor al crear el movimiento', error: e.message });
     }
 }
 
-// Actualizar tipo de movimiento
-export const actualizarTipoMovimiento = async (req, res) => {
-    const { id_tipo_movimiento } = req.params;  
-    const { tipo_movimiento, fecha_creacion, fecha_modificacion } = req.body;
+// Actualizar movimiento
+export const actualizarMovimiento = async (req, res) => {
+    const { id_movimiento } = req.params;  
+    const { fecha_creacion, fecha_modificacion, usuario_movimiento_id, tipo_movimiento_id, material_id } = req.body;
 
-    const sql = `UPDATE tipos_movimiento SET tipo_movimiento = $1, fecha_creacion = $2, fecha_modificacion = $3 WHERE id_tipo_movimiento = $4 RETURNING id_tipo_movimiento;`;
-
+    // Verificar si el movimiento existe
     try {
-        const result = await pool.query(sql, [
-            tipo_movimiento,
-            fecha_creacion, 
+        const checkSql = 'SELECT * FROM movimientos WHERE id_movimiento = $1';
+        const checkResult = await pool.query(checkSql, [id_movimiento]);
+        
+        if (checkResult.rowCount === 0) {
+            return res.status(404).json({
+                status: 404,
+                message: `No se encontró el movimiento con ID ${id_movimiento}`
+            });
+        }
+        
+        // Si el movimiento existe, procedemos a actualizarlo
+        const sql = `UPDATE movimientos SET fecha_creacion = $1, fecha_modificacion = $2, usuario_movimiento_id = $3, tipo_movimiento_id = $4, material_id = $5 WHERE id_movimiento = $6 RETURNING id_movimiento;`;
+
+        console.log("Datos para actualizar:", {
+            id_movimiento,
+            fecha_creacion,
             fecha_modificacion,
-            id_tipo_movimiento
+            usuario_movimiento_id,
+            tipo_movimiento_id,
+            material_id
+        });
+
+        const result = await pool.query(sql, [
+            fecha_creacion, 
+            fecha_modificacion, 
+            usuario_movimiento_id, 
+            tipo_movimiento_id, 
+            material_id,
+            id_movimiento
         ]);
 
         if (result.rowCount > 0) {
             return res.status(200).json({
                 status: 200,
-                message: "El tipo de movimiento ha sido actualizado",
-                id_tipo_movimiento: result.rows[0].id_tipo_movimiento 
+                message: "El movimiento ha sido actualizado",
+                id_movimiento: result.rows[0].id_movimiento 
             });
         } else {
             return res.status(400).json({
                 status: 400,
-                message: "No se ha podido actualizar el tipo de movimiento" 
+                message: "No se ha podido actualizar el movimiento. Verifica que los valores proporcionados sean válidos." 
             });
         }
     } catch (e) {
-        console.error('Error al actualizar el tipo de movimiento:', e);  
+        console.error('Error al actualizar el movimiento:', e);  
         return res.status(500).json({ 
-            message: 'Error del servidor al actualizar el tipo de movimiento',
+            message: 'Error del servidor al actualizar el movimiento',
             error: e.message
         });
     }
 };
 
-// Eliminar tipo de movimiento
-export const eliminarTipoMovimiento = async (req, res) => {
-    const { id_tipo_movimiento } = req.params;
-    const sql = 'DELETE FROM tipos_movimiento WHERE id_tipo_movimiento = $1 RETURNING id_tipo_movimiento'; 
-    
+// Eliminar movimiento
+export const eliminarMovimiento = async (req, res) => {
+    const { id_movimiento } = req.params;
+    const sql = 'DELETE FROM movimientos WHERE id_movimiento = $1 RETURNING id_movimiento'; 
     try {
-        const result = await pool.query(sql, [id_tipo_movimiento]);
+        const result = await pool.query(sql, [id_movimiento]);
         if (result.rowCount > 0) {
-            return res.status(200).json({ 
-                status: 200, 
-                message: "El tipo de movimiento ha sido eliminado" 
-            });
+            return res.status(200).json({ status: 200, message: "El movimiento ha sido eliminado" });
         } else {
-            return res.status(400).json({ 
-                status: 400, 
-                message: "No se ha podido eliminar el tipo de movimiento" 
-            });
+            return res.status(400).json({ status: 400, message: "No se ha podido eliminar el movimiento" });
         }
     } catch (e) {
-        console.error('Error al eliminar el tipo de movimiento:', e);
-        return res.status(500).json('Error del servidor al eliminar el tipo de movimiento');
+        return res.status(500).json('Error del servidor al eliminar el movimiento');
     }
-} 
+}
