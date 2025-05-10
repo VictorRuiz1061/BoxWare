@@ -73,8 +73,7 @@ export const registroPublico = async (req, res) => {
     email,
     contrasena,
     telefono,
-    inicio_sesion,
-    esta_activo,
+    estado,
     fecha_registro,
     rol_id,
   } = req.body;
@@ -95,8 +94,8 @@ export const registroPublico = async (req, res) => {
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
     const sql = `
-      INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, inicio_sesion, esta_activo, fecha_registro, rol_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
+      INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, estado, fecha_registro, rol_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id_usuario`;
 
     const result = await pool.query(sql, [
       nombre,
@@ -106,8 +105,7 @@ export const registroPublico = async (req, res) => {
       email,
       hashedPassword,
       telefono || null,
-      inicio_sesion || new Date(),
-      esta_activo !== undefined ? esta_activo : true,
+      estado || true,
       fecha_registro || new Date(),
       rol_id || 2, // Rol predeterminado (por ejemplo, cliente)
     ]);
@@ -119,5 +117,19 @@ export const registroPublico = async (req, res) => {
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     res.status(500).json({ message: "Error al registrar usuario" });
+  }
+};
+
+export const verificarToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Se requiere Token" });
+  }
+  try {
+    const decoded = Jwt.verify(token, process.env.AUT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token inválido" });
   }
 };

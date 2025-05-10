@@ -14,11 +14,17 @@ export const mostrarRoles = async (req, res) => {
 
 // Crear rol
 export const crearRol = async (req, res) => {
-    const { nombre_rol, descripcion, estado, fecha_creacion } = req.body;
-    const sql = 'INSERT INTO roles (nombre_rol, descripcion, estado, fecha_creacion) VALUES ($1, $2, $3, $4) RETURNING id_rol';
+    const { nombre_rol, descripcion, estado, fecha_creacion, fecha_modificacion } = req.body;
+    const sql = 'INSERT INTO roles (nombre_rol, descripcion, estado, fecha_creacion, fecha_modificacion) VALUES ($1, $2, $3, $4, $5) RETURNING id_rol';
     
     try {
-        const result = await pool.query(sql, [nombre_rol, descripcion, estado, fecha_creacion]);
+        const result = await pool.query(sql, [
+            nombre_rol, 
+            descripcion, 
+            estado, 
+            fecha_creacion || new Date(), 
+            fecha_modificacion || new Date()
+        ]);
         return res.status(200).json({ 
             status: 200, 
             message: "El rol se registró en el sistema", 
@@ -36,9 +42,16 @@ export const crearRol = async (req, res) => {
 // Actualizar rol
 export const actualizarRol = async (req, res) => {
     const { id_rol } = req.params;  
-    const { nombre_rol, descripcion, estado, fecha_creacion } = req.body;
+    const { nombre_rol, descripcion, estado, fecha_creacion, fecha_modificacion } = req.body;
 
-    const sql = `UPDATE roles SET nombre_rol = $1, descripcion = $2, estado = $3, fecha_creacion = $4 WHERE id_rol = $5 RETURNING id_rol;`;
+    const sql = `UPDATE roles 
+                 SET nombre_rol = $1, 
+                     descripcion = $2, 
+                     estado = $3, 
+                     fecha_creacion = $4, 
+                     fecha_modificacion = $5 
+                 WHERE id_rol = $6 
+                 RETURNING id_rol;`;
 
     try {
         const result = await pool.query(sql, [
@@ -46,6 +59,7 @@ export const actualizarRol = async (req, res) => {
             descripcion,
             estado,
             fecha_creacion,
+            fecha_modificacion || new Date(),
             id_rol
         ]);
 

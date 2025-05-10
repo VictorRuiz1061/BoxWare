@@ -1,4 +1,5 @@
 import { pool } from "../conexion/conexion.js";
+import bcrypt from "bcrypt";
 
 //mostrar usuarios
 export const mostrarUsuarios = async (req, res) => {
@@ -11,7 +12,8 @@ export const mostrarUsuarios = async (req, res) => {
   }
 };
 
-// Crear usuario
+
+//crear usuario
 export const crearUsuario = async (req, res) => {
   const {
     nombre,
@@ -21,46 +23,57 @@ export const crearUsuario = async (req, res) => {
     email,
     contrasena,
     telefono,
-    inicio_sesion,
-    esta_activo,
+    estado,
     fecha_registro,
     rol_id,
   } = req.body;
 
+  if (!nombre || !email || !contrasena) {
+    return res.status(400).json({ message: "Nombre, email y contraseña son obligatorios" });
+  }
+
   try {
-    const sql =
-      "INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, inicio_sesion, esta_activo, fecha_registro, rol_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)";
+    const existingUserQuery = "SELECT * FROM usuarios WHERE email = $1";
+    const existingUserResult = await pool.query(existingUserQuery, [email]);
+
+    if (existingUserResult.rows.length > 0) {
+      return res.status(409).json({ message: "El email ya está registrado" });
+    }
+
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(contrasena, 10);
+
+    const sql = `
+      INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, estado, fecha_registro, rol_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id_usuario`;
 
     const result = await pool.query(sql, [
       nombre,
-      apellido,
-      edad,
-      cedula,
+      apellido || null,
+      edad || null,
+      cedula || null,
       email,
-      contrasena,
-      telefono,
-      inicio_sesion,
-      esta_activo,
-      fecha_registro,
+      hashedPassword,
+      telefono || null,
+      estado || true,
+      fecha_registro || new Date(),
       rol_id,
     ]);
-    if (result.rowCount > 0) {
-      return res.status(201).json({ mensaje: "Usuario creado exitosamente" });
-    } else {
-      return res.status(404).json({ mensaje: "No se pudo crear el usuario" });
-    }
-  } catch (e) {
-    console.error(e);
-    return res
-      .status(500)
-      .json({ mensaje: "Error en el servidor", error: e.message });
+
+    res.status(201).json({
+      id_usuario: result.rows[0].id_usuario,
+      message: "Usuario registrado exitosamente",
+    });
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ message: "Error al registrar usuario" });
   }
 };
 
 // Actualizar usuario
 export const actualizarUsuario = async (req, res) => {
-  const { id_usuario } = req.params; // Extraer el id_usuario de los parámetros de la URL
-  const {
+  const { id_usuario } = req.params;
+  let {
     nombre,
     apellido,
     edad,
@@ -68,19 +81,27 @@ export const actualizarUsuario = async (req, res) => {
     email,
     contrasena,
     telefono,
-    inicio_sesion,
-    esta_activo,
+    estado,
     fecha_registro,
     rol_id,
   } = req.body;
 
   try {
+    // Si se envía una nueva contraseña, encriptarla
+    if (contrasena) {
+      contrasena = await bcrypt.hash(contrasena, 10);
+    } else {
+      // Si no se envía, mantener la anterior
+      const userResult = await pool.query("SELECT contrasena FROM usuarios WHERE id_usuario = $1", [id_usuario]);
+      contrasena = userResult.rows[0].contrasena;
+    }
+
     const sql = `
-            UPDATE usuarios 
-            SET nombre = $1, apellido = $2, edad = $3, cedula = $4, email = $5, contrasena = $6, 
-                telefono = $7, inicio_sesion = $8, esta_activo = $9, fecha_registro = $10, rol_id = $11
-            WHERE id_usuario = $12;
-        `;
+      UPDATE usuarios 
+      SET nombre = $1, apellido = $2, edad = $3, cedula = $4, email = $5, contrasena = $6, 
+          telefono = $7, estado = $8, fecha_registro = $9, rol_id = $10
+      WHERE id_usuario = $11;
+    `;
     const result = await pool.query(sql, [
       nombre,
       apellido,
@@ -89,27 +110,20 @@ export const actualizarUsuario = async (req, res) => {
       email,
       contrasena,
       telefono,
-      inicio_sesion,
-      esta_activo,
+      estado,
       fecha_registro,
       rol_id,
       id_usuario,
     ]);
 
     if (result.rowCount > 0) {
-      return res
-        .status(200)
-        .json({ mensaje: "Usuario actualizado exitosamente" });
+      return res.status(200).json({ mensaje: "Usuario actualizado exitosamente" });
     } else {
-      return res
-        .status(404)
-        .json({ mensaje: "Usuario no encontrado o no se pudo actualizar" });
+      return res.status(404).json({ mensaje: "Usuario no encontrado o no se pudo actualizar" });
     }
   } catch (e) {
     console.error(e);
-    return res
-      .status(500)
-      .json({ mensaje: "Error en el servidor", error: e.message });
+    return res.status(500).json({ mensaje: "Error en el servidor", error: e.message });
   }
 };
 
