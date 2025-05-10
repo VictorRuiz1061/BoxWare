@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { actualizarmodulo,  crearmodulo,  eliminarmodulo, mostrarmodulo } from "../controllers/modulo_V.js";
+import { actualizarModulo, crearModulo, eliminarModulo, mostrarModulos } from "../controllers/modulo_V.js";
 import { verificarToken } from "../controllers/seguridad.controller.js";    
 
 const router = Router();
-router.get('/modulo', verificarToken, mostrarmodulo);   
-router.post('/modulo', verificarToken, crearmodulo);
-router.put('/modulo/:id_modulo', verificarToken, actualizarmodulo);  
-router.delete('/modulo/:id_modulo', verificarToken, eliminarmodulo);  
+router.get('/modulos', verificarToken, mostrarModulos);   
+router.post('/modulos', verificarToken, crearModulo);
+router.put('/modulos/:id_modulo', verificarToken, actualizarModulo);  
+router.delete('/modulos/:id_modulo', verificarToken, eliminarModulo);  
 
 export default router;

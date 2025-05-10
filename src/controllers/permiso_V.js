@@ -13,23 +13,27 @@ export const mostrarPermisos = async (req, res) => {
 
 // Crear permiso
 export const crearPermiso = async (req, res) => {
-  const { nombre, codigo_nombre, modulo_id, rol_id } = req.body;
+  const { nombre, codigo_nombre, estado, fecha_creacion, modulo_id, rol_id } = req.body;
 
   try {
     const sql = `
       INSERT INTO permisos (
         nombre,
         codigo_nombre,
+        estado,
+        fecha_creacion,
         modulo_id,
         rol_id
       )
-      VALUES ($1, $2, $3, $4)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
 
     const result = await pool.query(sql, [
       nombre,
       codigo_nombre,
+      estado || true,
+      fecha_creacion || new Date(),
       modulo_id,
       rol_id,
     ]);
@@ -54,7 +58,7 @@ export const crearPermiso = async (req, res) => {
 // Actualizar permiso
 export const actualizarPermiso = async (req, res) => {
   const { id_permiso } = req.params;
-  const { nombre, codigo_nombre, modulo_id, rol_id } = req.body;
+  const { nombre, codigo_nombre, estado, fecha_creacion, modulo_id, rol_id } = req.body;
 
   try {
     const sql = `
@@ -62,15 +66,19 @@ export const actualizarPermiso = async (req, res) => {
       SET 
         nombre = $1,
         codigo_nombre = $2,
-        modulo_id = $3,
-        rol_id = $4
-      WHERE id_permiso = $5
+        estado = $3,
+        fecha_creacion = $4,
+        modulo_id = $5,
+        rol_id = $6
+      WHERE id_permiso = $7
       RETURNING *
     `;
 
     const result = await pool.query(sql, [
       nombre,
       codigo_nombre,
+      estado,
+      fecha_creacion,
       modulo_id,
       rol_id,
       id_permiso,
