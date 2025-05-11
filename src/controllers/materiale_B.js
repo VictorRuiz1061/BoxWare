@@ -38,7 +38,9 @@ export const crearMateriales = async (req, res) => {
         stock, 
         unidad_medida, 
         fecha_vencimiento, 
+        estado,
         producto_perecedero, 
+        imagen,
         fecha_creacion, 
         fecha_modificacion, 
         categoria_id, 
@@ -48,22 +50,37 @@ export const crearMateriales = async (req, res) => {
 
     try {
         const sql = `INSERT INTO materiales 
-            (codigo_sena, nombre_material, descripcion_material, stock, unidad_medida, fecha_vencimiento, producto_perecedero, fecha_creacion, fecha_modificacion, categoria_id, tipo_material_id, sitio_id) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id_material`;
+            (  codigo_sena, 
+        nombre_material, 
+        descripcion_material, 
+        stock, 
+        unidad_medida, 
+        fecha_vencimiento, 
+        estado,
+        producto_perecedero, 
+        imagen,
+        fecha_creacion, 
+        fecha_modificacion, 
+        categoria_id, 
+        tipo_material_id, 
+        sitio_id ) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id_material`;
 
         const result = await pool.query(sql, [
-            codigo_sena, 
-            nombre_material, 
-            descripcion_material, 
-            stock, 
-            unidad_medida, 
-            fecha_vencimiento, 
-            producto_perecedero, 
-            fecha_creacion, 
-            fecha_modificacion, 
-            categoria_id, 
-            tipo_material_id, 
-            sitio_id
+        codigo_sena, 
+        nombre_material, 
+        descripcion_material, 
+        stock, 
+        unidad_medida, 
+        fecha_vencimiento, 
+        estado,
+        producto_perecedero, 
+        imagen,
+        fecha_creacion, 
+        fecha_modificacion, 
+        categoria_id, 
+        tipo_material_id, 
+        sitio_id 
         ]);
 
         if (result.rowCount > 0) {
@@ -87,7 +104,9 @@ export const actualizarMaterial = async (req, res) => {
         stock, 
         unidad_medida, 
         fecha_vencimiento, 
+        estado,
         producto_perecedero, 
+        imagen,
         fecha_creacion, 
         fecha_modificacion, 
         categoria_id, 
@@ -108,7 +127,9 @@ export const actualizarMaterial = async (req, res) => {
             fecha_modificacion = $9, 
             categoria_id = $10, 
             tipo_material_id = $11, 
-            sitio_id = $12 
+            sitio_id = $12,
+            estado = $13,
+            imagen = $14 
             WHERE id_material = $13 RETURNING id_material`;
 
         const result = await pool.query(sql, [
@@ -124,6 +145,8 @@ export const actualizarMaterial = async (req, res) => {
             categoria_id, 
             tipo_material_id, 
             sitio_id, 
+            estado,
+            imagen,
             id_material
         ]);
 

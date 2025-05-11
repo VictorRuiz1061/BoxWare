@@ -14,6 +14,6 @@ app.use(categoria_elementos);
 app.use(tiposMateriales);
 
 
-app.listen(3001, () => {
+app.listen(3000, () => {
     console.log('corriendo en el puerto 3001')
 });

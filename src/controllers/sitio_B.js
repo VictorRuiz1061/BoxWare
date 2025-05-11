@@ -30,10 +30,10 @@ export const buscarSitio = async (req, res) => {
 }
 
 export const crearSitio = async (req, res) => {
-    const {  nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , persona_encargada_id , tipo_sitio_id } = req.body;
-    const sql = 'INSERT INTO sitios ( nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , persona_encargada_id , tipo_sitio_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_sitio';
+    const {  nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , estado , tipo_sitio_id } = req.body;
+    const sql = 'INSERT INTO sitios (nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , estado , tipo_sitio_id ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id_sitio';
     try {
-        const result = await pool.query(sql, [ nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , persona_encargada_id , tipo_sitio_id]);
+        const result = await pool.query(sql, [ nombre_sitio , ubicacion , fecha_creacion , ficha_tecnica , fecha_modificacion , estado , tipo_sitio_id ]);
         return res.status(200).json({ status: 200, message: "El sitio se registró en el sistema", id_sitio: result.rows[0].id_sitio });
     } catch (e) {
         console.error('Error al crear el sitio:', e);  // Esto imprime el error completo en la consola
@@ -45,13 +45,13 @@ export const crearSitio = async (req, res) => {
 // Actualizar sitio
 export const actualizarSitio = async (req, res) => {
     const { id_sitio } = req.params;  
-    const { nombre_sitio, ubicacion, fecha_creacion, ficha_tecnica, fecha_modificacion, persona_encargada_id, tipo_sitio_id } = req.body;
+    const { nombre_sitio, ubicacion, fecha_creacion, ficha_tecnica, fecha_modificacion, estado, tipo_sitio_id } = req.body;
 
 
-    const sql = `UPDATE sitios  SET  nombre_sitio = $1, ubicacion = $2,ficha_tecnica = $3,fecha_creacion = $4, fecha_modificacion = $5, persona_encargada_id = $6, tipo_sitio_id = $7  WHERE id_sitio = $8 RETURNING id_sitio; `;
+    const sql = `UPDATE sitios  SET  nombre_sitio = $1, ubicacion = $2,ficha_tecnica = $3,fecha_creacion = $4, fecha_modificacion = $5, estado = $6, tipo_sitio_id = $7  WHERE id_sitio = $8 RETURNING id_sitio; `;
 
     try {
-        const result = await pool.query(sql, [nombre_sitio,ubicacion,ficha_tecnica,fecha_creacion,fecha_modificacion,persona_encargada_id,tipo_sitio_id,id_sitio
+        const result = await pool.query(sql, [nombre_sitio,ubicacion,ficha_tecnica,fecha_creacion,fecha_modificacion,estado,tipo_sitio_id,id_sitio
         ]);
 
         if (result.rowCount > 0) {

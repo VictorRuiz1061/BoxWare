@@ -5,9 +5,9 @@ import {validarToken} from '../controllers/seguridad.controller.js';
 const router = Router();
 
 router.get('/materiales', mostrarMateriales,validarToken);
-router.get('/materiales/buscar/:id_material', buscarMaterial,validarToken);
-router.post('/materiales/crear', crearMateriales,validarToken);
-router.put('/materiales/actualizar/:id_material', actualizarMaterial,validarToken);
-router.delete('/materiales/eliminar/:id_material', eliminarMaterial,validarToken);
+router.get('/materiales/:id_material', buscarMaterial,validarToken);
+router.post('/materiales', crearMateriales,validarToken);
+router.put('/materiales/:id_material', actualizarMaterial,validarToken);
+router.delete('/materiales/:id_material', eliminarMaterial,validarToken);
 
 export default router;

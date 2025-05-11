@@ -29,10 +29,10 @@ export const buscarcategorias_elementos = async (req, res) => {
 }
 // Crear categoría de material
 export const crearcategorias_elementos = async (req, res) => {
-    const { codigo_unpsc, nombre_categoria, fecha_creacion, fecha_modificacion } = req.body;
+    const { codigo_unpsc, nombre_categoria, estado, fecha_creacion, fecha_modificacion } = req.body;
     try {
-        const sql = 'INSERT INTO categorias_elementos (codigo_unpsc, nombre_categoria, fecha_creacion, fecha_modificacion) VALUES ($1, $2, $3, $4)';
-        const result = await pool.query(sql, [codigo_unpsc, nombre_categoria, fecha_creacion, fecha_modificacion]);
+        const sql = 'INSERT INTO categorias_elementos (codigo_unpsc, nombre_categoria,estado, fecha_creacion, fecha_modificacion) VALUES ($1, $2, $3, $4,$5)';
+        const result = await pool.query(sql, [codigo_unpsc, nombre_categoria, estado, fecha_creacion, fecha_modificacion]);
         if (result.rowCount > 0) {
             return res.status(200).json({ status: 200, message: "Categoría de material creada con éxito" });
         } else {
@@ -48,10 +48,10 @@ export const crearcategorias_elementos = async (req, res) => {
 // Actualizar categoría de material
 export const actualizarcategorias_elementos = async (req, res) => {
     const {  id_categoria_elemento} = req.params;
-    const { codigo_unpsc, nombre_categoria, fecha_creacion, fecha_modificacion } = req.body;
+    const { codigo_unpsc, nombre_categoria, estado, fecha_creacion, fecha_modificacion } = req.body;
     try {
-        const sql = 'UPDATE categorias_elementos SET codigo_unpsc = $1, nombre_categoria = $2, fecha_creacion = $3, fecha_modificacion = $4 WHERE  id_categoria_elemento= $5';
-        const result = await pool.query(sql, [codigo_unpsc, nombre_categoria, fecha_creacion, fecha_modificacion, id_categoria_elemento]);
+        const sql = 'UPDATE categorias_elementos SET codigo_unpsc = $1, nombre_categoria = $2, fecha_creacion = $3, fecha_modificacion = $4, estado = $5 WHERE  id_categoria_elemento= $5';
+        const result = await pool.query(sql, [codigo_unpsc, nombre_categoria,  estado, fecha_creacion, fecha_modificacion, id_categoria_elemento]);
         if (result.rowCount > 0) {
             return res.status(200).json({ status: 200, message: "Categoría de material actualizada con éxito" });
         } else {
