@@ -15,7 +15,6 @@ export const mostrarTipoMaterial = async (req, res) => {
     }
 }
 
-
 export const buscarTipoMaterial = async (req, res) => {
     const { id_tipo_material } = req.params;
     console.log("Buscando tipo de material con ID:", id_tipo_material); // Agrega esto para depuración
