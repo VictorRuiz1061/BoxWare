@@ -3,7 +3,7 @@ import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 function checkEnvVariables() {
-  const requiredEnvVars = ["AUT_SECRET", "AUT_EXPIRE"];
+  const requiredEnvVars = ["JWT_SECRET", "AUT_EXPIRE"];
   const missingVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
 
   if (missingVars.length > 0) {
@@ -39,7 +39,7 @@ export const validar = async (req, res) => {
         nombre: user.nombre,
         rol: user.rol,
       },
-      process.env.AUT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: process.env.AUT_EXPIRE }
     );
 
@@ -126,7 +126,7 @@ export const verificarToken = (req, res, next) => {
     return res.status(401).json({ message: "Se requiere Token" });
   }
   try {
-    const decoded = Jwt.verify(token, process.env.AUT_SECRET);
+    const decoded = Jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
