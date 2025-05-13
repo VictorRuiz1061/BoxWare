@@ -1,5 +1,21 @@
 import { pool } from "../conexion/conexion.js";
 
+import multer from "multer";
+
+const configuracion = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/img'); // Ruta relativa a tu proyecto
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname); // Evita duplicados con timestamp
+    }
+});
+
+const upload = multer({ storage: configuracion });
+export const cargarImagen = upload.single('img');
+
+
+
 // Mostrar materiales
 export const mostrarMateriales = async (req, res) => {
     const sql = 'SELECT * FROM materiales';
@@ -31,68 +47,63 @@ export const buscarMaterial = async (req, res) => {
 
 // Crear material
 export const crearMateriales = async (req, res) => {
-    const { 
-        codigo_sena, 
-        nombre_material, 
-        descripcion_material, 
-        stock, 
-        unidad_medida, 
-        fecha_vencimiento, 
+    const {
+        codigo_sena,
+        nombre_material,
+        descripcion_material,
+        stock,
+        unidad_medida,
+        fecha_vencimiento,
         estado,
-        producto_perecedero, 
-        imagen,
-        fecha_creacion, 
-        fecha_modificacion, 
-        categoria_id, 
-        tipo_material_id, 
-        sitio_id 
+        producto_perecedero,
+        fecha_creacion,
+        fecha_modificacion,
+        categoria_id,
+        tipo_material_id,
+        sitio_id
     } = req.body;
 
+    const imagen = req.file?.filename || null;
+
     try {
-        const sql = `INSERT INTO materiales 
-            (  codigo_sena, 
-        nombre_material, 
-        descripcion_material, 
-        stock, 
-        unidad_medida, 
-        fecha_vencimiento, 
-        estado,
-        producto_perecedero, 
-        imagen,
-        fecha_creacion, 
-        fecha_modificacion, 
-        categoria_id, 
-        tipo_material_id, 
-        sitio_id ) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id_material`;
+        const sql = `
+            INSERT INTO materiales (
+                codigo_sena, nombre_material, descripcion_material, stock,
+                unidad_medida, fecha_vencimiento, estado, producto_perecedero,
+                imagen, fecha_creacion, fecha_modificacion, categoria_id,
+                tipo_material_id, sitio_id
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+            RETURNING id_material;
+        `;
 
         const result = await pool.query(sql, [
-        codigo_sena, 
-        nombre_material, 
-        descripcion_material, 
-        stock, 
-        unidad_medida, 
-        fecha_vencimiento, 
-        estado,
-        producto_perecedero, 
-        imagen,
-        fecha_creacion, 
-        fecha_modificacion, 
-        categoria_id, 
-        tipo_material_id, 
-        sitio_id 
+            codigo_sena,
+            nombre_material,
+            descripcion_material,
+            stock,
+            unidad_medida,
+            fecha_vencimiento,
+            estado,
+            producto_perecedero,
+            imagen,
+            fecha_creacion,
+            fecha_modificacion,
+            categoria_id,
+            tipo_material_id,
+            sitio_id
         ]);
 
-        if (result.rowCount > 0) {
-            return res.status(200).json({ status: 200, message: "Material creado correctamente", id: result.rows[0].id });
-        } else {
-            return res.status(400).json({ status: 400, message: "Error al crear el material" });
-        }
+        return res.status(200).json({
+            status: 200,
+            message: "Material creado correctamente",
+            id: result.rows[0].id_material
+        });
     } catch (e) {
         console.error('Error al crear material:', e);
         return res.status(500).json({ message: 'Error del servidor al crear el material', error: e.message });
     }
 };
+
 
 // Actualizar material
 export const actualizarMaterial = async (req, res) => {

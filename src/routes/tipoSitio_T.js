@@ -4,9 +4,9 @@ import { verificarToken } from "../controllers/seguridad.controller.js";
 
 const router = Router();
 
-router.get('/tipos-sitio', verificarToken, mostrarTiposSitio);
-router.post('/tipos-sitio', verificarToken, crearTipoSitio);
-router.put('/tipos-sitio/:id_tipo_sitio', verificarToken, actualizarTipoSitio);
-router.delete('/tipos-sitio/:id_tipo_sitio', verificarToken, eliminarTipoSitio);
+router.get('/tipos-sitio', mostrarTiposSitio,verificarToken);
+router.post('/tipos-sitio',  crearTipoSitio,verificarToken);
+router.put('/tipos-sitio/:id_tipo_sitio',  actualizarTipoSitio,verificarToken);
+router.delete('/tipos-sitio/:id_tipo_sitio',  eliminarTipoSitio,verificarToken);
 
 export default router;
