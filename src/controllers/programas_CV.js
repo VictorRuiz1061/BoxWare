@@ -35,10 +35,15 @@ export const crearPrograma = async (req, res) => {
 
   try {
     const sql = `
-            INSERT INTO programas(nombre_programa, fecha_creacion, area_id) VALUES ($1, CURRENT_TIMESTAMP, $2) 
+            INSERT INTO programas(
+            nombre_programa, 
+            fecha_creacion, 
+            fecha_modificacion, 
+            area_id) 
+            VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $2) 
             RETURNING *`;
 
-    const result = await pool.query(sql, [nombre_programa, area_id]);
+    const result = await pool.query(sql, [nombre_programa, area_id, estado]);
 
     return res.status(201).json({
       mensaje: "Programa creado exitosamente",

@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { mostrarProgramas, crearPrograma, actualizarPrograma, eliminarPrograma } from "../controllers/programas_CV.js";  // Asegúrate de que la ruta sea correcta
-import { verificarToken } from "../controllers/seguridad.controller.js";    
 
 const router = Router();
-router.get('/programa', verificarToken, mostrarProgramas);
-router.post('/programa', verificarToken, crearPrograma);
-router.put('/programa/:id_programa', verificarToken, actualizarPrograma);  
-router.delete('/programa/:id_programa', verificarToken, eliminarPrograma);
+router.get('/programas', mostrarProgramas);
+router.post('/programas', crearPrograma);
+router.put('/programas/:id_programa', actualizarPrograma);  
+router.delete('/programas/:id_programa', eliminarPrograma);
 
 export default router;

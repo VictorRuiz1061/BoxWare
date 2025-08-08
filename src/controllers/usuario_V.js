@@ -24,6 +24,7 @@ export const crearUsuario = async (req, res) => {
     contrasena,
     telefono,
     estado,
+    imagen,
     fecha_registro,
     rol_id,
   } = req.body;
@@ -44,8 +45,8 @@ export const crearUsuario = async (req, res) => {
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
     const sql = `
-      INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, estado, fecha_registro, rol_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id_usuario`;
+      INSERT INTO usuarios (nombre, apellido, edad, cedula, email, contrasena, telefono, estado, imagen, fecha_registro, rol_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id_usuario`;
 
     const result = await pool.query(sql, [
       nombre,
@@ -56,6 +57,7 @@ export const crearUsuario = async (req, res) => {
       hashedPassword,
       telefono || null,
       estado || true,
+      imagen || null,
       fecha_registro || new Date(),
       rol_id,
     ]);
@@ -82,6 +84,7 @@ export const actualizarUsuario = async (req, res) => {
     contrasena,
     telefono,
     estado,
+    imagen,
     fecha_registro,
     rol_id,
   } = req.body;
@@ -99,8 +102,8 @@ export const actualizarUsuario = async (req, res) => {
     const sql = `
       UPDATE usuarios 
       SET nombre = $1, apellido = $2, edad = $3, cedula = $4, email = $5, contrasena = $6, 
-          telefono = $7, estado = $8, fecha_registro = $9, rol_id = $10
-      WHERE id_usuario = $11;
+          telefono = $7, estado = $8, imagen = $9, fecha_registro = $10, rol_id = $11
+      WHERE id_usuario = $12;
     `;
     const result = await pool.query(sql, [
       nombre,
@@ -111,6 +114,7 @@ export const actualizarUsuario = async (req, res) => {
       contrasena,
       telefono,
       estado,
+      imagen,
       fecha_registro,
       rol_id,
       id_usuario,

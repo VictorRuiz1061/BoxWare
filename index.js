@@ -29,10 +29,9 @@ app.use(
   })
 );
 
-const app2 = express();
-app2.use(  
+app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -66,20 +65,7 @@ app.use(materiales);
 app.use(categoria_elementos);
 app.use(tiposMateriales);
 
-app.use(
-    cors({
-      origin: "http://localhost:5173",
-      credentials: true,
-    })
-  );
 
-app2.use(
-    cors({
-      origin: "http://localhost:5174",
-      credentials: true,
-    })
-  );
-
-app.listen(3002, () => {
-    console.log('corriendo en el puerto 3002')
+app.listen(3000, () => {
+    console.log('corriendo en el puerto 3000')
 });

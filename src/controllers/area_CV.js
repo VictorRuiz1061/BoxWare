@@ -36,16 +36,18 @@ export const crearArea = async (req, res) => {
 // Actualizar área
 export const actualizarArea = async (req, res) => {
     const { id_area } = req.params; 
-    const { nombre_area } = req.body;
+    const { nombre_area, estado, sede_id } = req.body;
 
     try {
         const sql = `
             UPDATE areas 
             SET nombre_area = $1, 
-                fecha_modificacion = CURRENT_TIMESTAMP
+                fecha_modificacion = CURRENT_TIMESTAMP,
+                sede_id = $3,
+                estado = $4
             WHERE id_area = $2
         `;
-        const result = await pool.query(sql, [nombre_area, id_area]);
+        const result = await pool.query(sql, [nombre_area, id_area, sede_id, estado]);
 
         if (result.rowCount > 0) {
             return res.status(200).json({ mensaje: 'Área actualizada exitosamente' });

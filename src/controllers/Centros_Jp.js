@@ -58,10 +58,10 @@ export const actualizarCentrosJp = async (req, res) => {
 
         const result = await pool.query(sql, [
             nombre_centro,
-            estado,
+            estado || true,
             fecha_modificacion || new Date(),
             municipio_id,
-            id_centro 
+            id_centro
         ]);
 
         if (result.rowCount > 0) {

@@ -25,11 +25,11 @@ export const mostrarFichas = async (req, res) => {
 
 // Crear ficha
 export const crearFicha = async (req, res) => {
-  const { id_ficha, usuario_ficha_id, programa_id } = req.body;
+  const { id_ficha, estado, usuario_id, programa_id } = req.body;
 
-  if (!id_ficha || !usuario_ficha_id || !programa_id) {
+  if (id_ficha === undefined || id_ficha === null || estado === undefined || estado === null || usuario_id === undefined || usuario_id === null || programa_id === undefined || programa_id === null) {
     return res.status(400).json({
-      mensaje: "El ID de la ficha, el ID del usuario y el ID del programa son requeridos",
+      mensaje: "El ID de la ficha, el estado, el ID del usuario y el ID del programa son requeridos",
     });
   }
 
@@ -37,16 +37,15 @@ export const crearFicha = async (req, res) => {
     const sql = `
       INSERT INTO fichas (
         id_ficha,
+        estado,
         fecha_creacion,
         fecha_modificacion,
-        usuario_ficha_id,
+        usuario_id,
         programa_id
-      ) VALUES (
-        $1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $2, $3
-      ) RETURNING *
-    `;
+      ) VALUES (  $1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $3, $4)
+      RETURNING *`;
 
-    const result = await pool.query(sql, [id_ficha, usuario_ficha_id, programa_id]);
+    const result = await pool.query(sql, [id_ficha, estado, usuario_id, programa_id]);
     return res.status(201).json({
       mensaje: "Ficha creada exitosamente",
       ficha: result.rows[0],
@@ -63,11 +62,11 @@ export const crearFicha = async (req, res) => {
 // Actualizar ficha
 export const actualizarFicha = async (req, res) => {
   const { id_ficha } = req.params;
-  const { usuario_ficha_id, programa_id } = req.body;
+  const { usuario_id, programa_id, estado } = req.body;
 
-  if (!usuario_ficha_id || !programa_id) {
+  if (usuario_id === undefined || usuario_id === null || programa_id === undefined || programa_id === null || estado === undefined || estado === null) {
     return res.status(400).json({
-      mensaje: "El ID del usuario y el ID del programa son requeridos",
+      mensaje: "El ID del usuario, el ID del programa y el estado son requeridos",
     });
   }
 
@@ -75,15 +74,17 @@ export const actualizarFicha = async (req, res) => {
     const sql = `
             UPDATE fichas 
             SET fecha_modificacion = CURRENT_TIMESTAMP,
-                usuario_ficha_id = $1,
-                programa_id = $2
-            WHERE id_ficha = $3
+                usuario_id = $1,
+                programa_id = $2,
+                estado = $3
+            WHERE id_ficha = $4
             RETURNING *
         `;
 
     const result = await pool.query(sql, [
-      usuario_ficha_id,
+      usuario_id,
       programa_id,
+      estado,
       id_ficha,
     ]);
 
